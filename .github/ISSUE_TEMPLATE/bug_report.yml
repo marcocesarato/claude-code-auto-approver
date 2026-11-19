@@ -1,0 +1,36 @@
+name: Bug report
+description: A prompt was not accepted, something was pressed that should not be, or the app misbehaves.
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: Thanks for reporting. Remove chat titles, paths or commands you do not want to share before pasting the log.
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened
+      description: What you expected, and what the app did instead.
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: The app's version (top of its menu), macOS or Windows version, and the Claude app's version.
+      placeholder: Auto Approver 1.0.0 · macOS 26.1 · Claude 1.2.3
+    validations:
+      required: true
+  - type: dropdown
+    id: where
+    attributes:
+      label: Where was the prompt?
+      options:
+        - In the Claude window
+        - On a notification banner
+        - Not sure
+  - type: textarea
+    id: log
+    attributes:
+      label: Log
+      description: The lines around the problem, from Open log in the menu.
+      render: text
