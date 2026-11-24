@@ -28,6 +28,13 @@
   <a href="#-faq">FAQ</a>
 </p>
 
+<p align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="docs/woodpecker-dark.gif">
+    <img src="docs/woodpecker-light.gif" alt="A woodpecker pecking the Allow once button of a Claude permission prompt" width="432">
+  </picture>
+</p>
+
 ---
 
 You start a long task in Claude Code, switch to something else, and come back an hour
@@ -240,6 +247,10 @@ Built by **Marco Cesarato**.
 ---
 
 <div align="center">
+
+<img src="https://media1.tenor.com/m/xfmQKwxXdzcAAAAC/homer-simpson-yes-yes.gif" alt="Homer Simpson nodding yes, yes" width="240">
+
+<br>
 
 [Download](https://github.com/marcocesarato/claude-code-auto-approver/releases/latest) · [How it works](https://github.com/marcocesarato/claude-code-auto-approver#-how-it-works) · [Install](https://github.com/marcocesarato/claude-code-auto-approver#-install) · [Safety](https://github.com/marcocesarato/claude-code-auto-approver#-safety-first) · [FAQ](https://github.com/marcocesarato/claude-code-auto-approver#-faq)
 
