@@ -28,12 +28,20 @@ cp resources/Info.plist "$APP/Contents/Info.plist"
 /usr/libexec/PlistBuddy -c "Set CFBundleShortVersionString $VERSION" -c "Set CFBundleVersion $VERSION" \
     "$APP/Contents/Info.plist"
 
-WORK="$(mktemp -d)"
-trap 'rm -rf "$WORK"' EXIT
-swiftc -O scripts/make-icon.swift -o "$WORK/make-icon" -framework Cocoa
-mkdir "$WORK/AppIcon.iconset"
-"$WORK/make-icon" "$WORK/AppIcon.iconset" >/dev/null
-iconutil -c icns "$WORK/AppIcon.iconset" -o "$APP/Contents/Resources/AppIcon.icns"
+# The icon is an Icon Composer document. actool compiles it into Assets.car, which macOS 26
+# renders in Liquid Glass, and AppIcon.icns for earlier systems. It ships with Xcode 26 or
+# later, not with the Command Line Tools.
+DEV="$(xcode-select -p)"
+[[ -x "$DEV/usr/bin/actool" ]] || DEV=/Applications/Xcode.app/Contents/Developer
+if [[ -x "$DEV/usr/bin/actool" ]]; then
+    WORK="$(mktemp -d)"
+    trap 'rm -rf "$WORK"' EXIT
+    DEVELOPER_DIR="$DEV" xcrun actool resources/AppIcon.icon --compile "$APP/Contents/Resources" \
+        --platform macosx --minimum-deployment-target 13.0 --app-icon AppIcon \
+        --output-partial-info-plist "$WORK/icon.plist" >/dev/null
+else
+    echo "⚠️  Xcode not found, building without the app icon"
+fi
 
 # Ad-hoc: privacy grants attach to the signature, so a rebuilt app needs Accessibility again.
 codesign --force --deep --sign - "$APP"

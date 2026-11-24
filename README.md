@@ -16,7 +16,7 @@
 </p>
 
 <p align="center">
-  <b>A tiny menu bar app that presses “Allow once” for you in the Claude desktop app,<br>
+  <b>A tiny menu bar app that taps “Allow once” for you in the Claude desktop app, like a woodpecker,<br>
   so long Claude Code sessions keep moving while you are somewhere else.</b>
 </p>
 
@@ -39,9 +39,9 @@
 
 You start a long task in Claude Code, switch to something else, and come back an hour
 later to find it stopped at minute two, waiting for you to approve `ls`. **Auto Approver
-ends that.** It watches the Claude desktop app and answers each permission prompt the moment
-it appears: in the window you are looking at, and on the notification of a session running
-in the background.
+ends that.** Like a woodpecker on a tree, it keeps watch on the Claude desktop app and taps each
+permission prompt the moment it appears: in the window you are looking at, and on the
+notification of a session running in the background.
 
 <p align="center">
   <picture>
@@ -220,7 +220,7 @@ macos/                    the macOS app, a Swift package
   sources/app/            menu, monitor, Accessibility walkers, notifications
   tests/                  Swift Testing suites for the core
   resources/Info.plist    bundle metadata; the version lives here
-  scripts/                build-app.sh, install.sh, uninstall.sh, make-icon.swift
+  scripts/                build-app.sh, install.sh, uninstall.sh
 windows/                  the PowerShell version
 docs/                     README art: make-art.py draws each picture as SVG and 2x PNG
 .github/workflows/        CI on every push, a release on every v* tag

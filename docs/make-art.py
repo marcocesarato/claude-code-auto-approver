@@ -5,7 +5,7 @@ out = sys.argv[1] if len(sys.argv) > 1 else __import__("os").path.dirname(__file
 FONT = "-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif"
 
 def glyph(cx, cy, r, ink="#fff"):
-    # The app's mark: a glass disc with a check, at centre (cx, cy), radius r.
+    # The menu bar icon: a glass disc with a check, at centre (cx, cy), radius r.
     s = r / 50
     return f'''<g transform="translate({cx - r} {cy - r}) scale({s})">
   <circle cx="50" cy="50" r="46" fill="{ink}" fill-opacity=".22" stroke="{ink}" stroke-opacity=".55" stroke-width="2.5"/>
@@ -20,18 +20,13 @@ def banner(dark):
     ix, iy = (w - S) / 2, 92
     return f'''<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {w} {h}" width="{w}" height="{h}" font-family="{FONT}" role="img" aria-label="Claude Code - Auto Approver. Stop babysitting permission prompts.">
 <defs>
-  <linearGradient id="tile" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFA278"/><stop offset="1" stop-color="#E0482F"/></linearGradient>
-  <linearGradient id="sheen" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".38"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/></linearGradient>
   <linearGradient id="word" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FF8A5B"/><stop offset="1" stop-color="#D93A22"/></linearGradient>
   <radialGradient id="halo" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FF7A4D" stop-opacity="{.30 if dark else .20}"/><stop offset="1" stop-color="#FF7A4D" stop-opacity="0"/></radialGradient>
   <filter id="lift" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#7a2410" flood-opacity="{.55 if dark else .28}"/></filter>
 </defs>
 <rect width="{w}" height="{h}" rx="28" fill="{bg}"/>
 <ellipse cx="{w/2}" cy="{iy + S/2}" rx="330" ry="210" fill="url(#halo)"/>
-<g filter="url(#lift)"><rect x="{ix}" y="{iy}" width="{S}" height="{S}" rx="{S*0.2237}" fill="url(#tile)"/></g>
-<rect x="{ix}" y="{iy}" width="{S}" height="{S}" rx="{S*0.2237}" fill="url(#sheen)"/>
-<rect x="{ix+.75}" y="{iy+.75}" width="{S-1.5}" height="{S-1.5}" rx="{S*0.2237}" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="1.5"/>
-{glyph(w/2, iy + S/2, S*0.34)}
+<image href="icon.png" x="{ix}" y="{iy}" width="{S}" height="{S}" filter="url(#lift)"/>
 <text x="{w/2}" y="378" text-anchor="middle" font-size="26" font-weight="600" fill="{sub}" letter-spacing=".2">Claude Code</text>
 <text x="{w/2}" y="452" text-anchor="middle" font-size="80" font-weight="700" letter-spacing="-2.4" fill="{ink}">Auto Approver<tspan fill="url(#word)">.</tspan></text>
 <text x="{w/2}" y="506" text-anchor="middle" font-size="30" font-weight="500" letter-spacing="-.3" fill="{sub}">Stop babysitting permission prompts.</text>
@@ -102,6 +97,18 @@ def menu(dark):
 # everywhere. The menu's page colour is GitHub's own, light and dark, so it blends in.
 import os, re, shutil, subprocess, tempfile
 CHROME = "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome"
+
+# The banner shows the app icon itself: Icon Composer's ictool renders the icon document, in
+# Liquid Glass, as icon.png, which the banner's SVG references. It ships inside Xcode.
+dev = os.environ.get("DEVELOPER_DIR") or subprocess.run(["xcode-select", "-p"], capture_output=True, text=True).stdout.strip()
+if "CommandLineTools" in dev:
+    dev = "/Applications/Xcode.app/Contents/Developer"
+ictool = os.path.join(dev, "..", "Applications", "Icon Composer.app", "Contents", "Executables", "ictool")
+icon = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "macos", "resources", "AppIcon.icon")
+subprocess.run([ictool, icon, "--export-image", "--output-file", f"{out}/icon.png", "--platform", "macOS",
+                "--rendition", "Default", "--width", "512", "--height", "512", "--scale", "1"],
+               check=True, capture_output=True)
+print("icon.png written")
 for name, svg in [("banner-light", banner(False)), ("banner-dark", banner(True)),
                   ("menu-light", menu(False)), ("menu-dark", menu(True))]:
     path = f"{out}/{name}.svg"

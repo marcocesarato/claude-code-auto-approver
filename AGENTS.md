@@ -19,9 +19,9 @@ banner in Notification Center (`com.apple.notificationcenterui`). A PowerShell p
 | `macos/sources/app/` | Menu, monitor, Accessibility walkers, notifier, settings | Reads the screen and the disk. Keep the logic in `core/`. |
 | `macos/tests/` | Swift Testing suites for `core/` | XCTest is not used: it does not run with the Command Line Tools. |
 | `macos/resources/Info.plist` | Bundle metadata and the version | The release workflow overrides the version from the tag. |
-| `macos/scripts/` | `build-app.sh`, `install.sh`, `uninstall.sh`, `make-icon.swift` | Each script `cd`s to `macos/` itself. |
+| `macos/scripts/` | `build-app.sh`, `install.sh`, `uninstall.sh` | Each script `cd`s to `macos/` itself. `build-app.sh` compiles the icon with Xcode's `actool`. |
 | `windows/` | `auto-approver.ps1` and its installers | Keep its behaviour and log lines in step with the macOS app. |
-| `docs/` | README art, light and dark; `make-art.py` writes each picture as SVG and as the 2x PNG the README shows | Edit the generator, never the pictures. Rendering the PNGs needs Google Chrome. |
+| `docs/` | README art, light and dark; `make-art.py` writes each picture as SVG and as the 2x PNG the README shows, and `icon.png`, the app icon the banner shows, rendered from `macos/resources/AppIcon.icon` | Edit the generator, never the pictures; edit the icon in Icon Composer. Rendering needs Google Chrome and Xcode. |
 
 Folder names are lowercase. Swift files are named after the type they hold.
 
