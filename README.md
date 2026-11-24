@@ -236,3 +236,11 @@ Built by **Marco Cesarato**.
 ## 📄 License
 
 [MIT](LICENSE). Not affiliated with, endorsed by or sponsored by Anthropic.
+
+---
+
+<div align="center">
+
+[Download](https://github.com/marcocesarato/claude-code-auto-approver/releases/latest) · [How it works](https://github.com/marcocesarato/claude-code-auto-approver#-how-it-works) · [Install](https://github.com/marcocesarato/claude-code-auto-approver#-install) · [Safety](https://github.com/marcocesarato/claude-code-auto-approver#-safety-first) · [FAQ](https://github.com/marcocesarato/claude-code-auto-approver#-faq)
+
+</div>
