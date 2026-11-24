@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.0.1
 
 - New app icon: a woodpecker, made in Icon Composer, so macOS 26 shows it in Liquid Glass.
   The README banner shows it too.
