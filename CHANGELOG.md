@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- The menu has a **GitHub** item that opens the project's page.
+
 ## 1.0.1
 
 - New app icon: a woodpecker, made in Icon Composer, so macOS 26 shows it in Liquid Glass.

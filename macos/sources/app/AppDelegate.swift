@@ -64,6 +64,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         skipItem.submenu = skipMenu
         menu.addItem(skipItem)
         menu.addItem(item(L10n.t(.openLog), #selector(openLog)))
+        menu.addItem(item("GitHub", #selector(openRepository)))
         menu.addItem(.separator())
         menu.addItem(item(L10n.t(.quit), #selector(quit), key: "q"))
 
@@ -137,5 +138,6 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         log(sender.state == .on ? "▶️ Approving \"\(sender.title)\" again" : "⏭ Skipping \"\(sender.title)\"")
     }
     @objc private func openLog() { NSWorkspace.shared.open(URL(fileURLWithPath: Settings.logPath)) }
+    @objc private func openRepository() { NSWorkspace.shared.open(Product.repository) }
     @objc private func quit() { NSApp.terminate(nil) }
 }

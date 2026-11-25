@@ -46,7 +46,7 @@ notification of a session running in the background.
 <p align="center">
   <picture>
     <source media="(prefers-color-scheme: dark)" srcset="docs/menu-dark.png">
-    <img src="docs/menu-light.png" alt="The Auto Approver menu: status, Pause, Skip chats, Open log, Quit" width="720">
+    <img src="docs/menu-light.png" alt="The Auto Approver menu: status, Pause, Skip chats, Open log, GitHub, Quit" width="720">
   </picture>
 </p>
 
@@ -154,6 +154,7 @@ outline** while it is paused or lacks permission.
 | **Resume** | Shown while paused. Turns approving back on now. |
 | **Skip chats ▸** | Lists the chats open in the window and those running or waiting in its sidebar. A ticked chat is left to you. |
 | **Open log** | Opens what the app saw and pressed. |
+| **GitHub** | Opens the project's page, for releases and issues. |
 
 A skipped chat is known by its title. If Claude renames the chat, the skip ends, and two
 chats with the same title are both skipped.

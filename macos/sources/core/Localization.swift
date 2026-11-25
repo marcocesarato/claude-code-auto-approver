@@ -3,6 +3,7 @@ import Foundation
 public enum Product {
     public static let name = "Claude Code - Auto Approver"
     public static let author = "Marco Cesarato"
+    public static let repository = URL(string: "https://github.com/marcocesarato/claude-code-auto-approver")!
 }
 
 /// The app's own words, in the first of the user's languages it has; English otherwise.

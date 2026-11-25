@@ -46,7 +46,7 @@ def menu(dark):
     x0, y0, mw = 200, 52, 300
     rows = [("title", "Claude Code - Auto Approver 1.0.0"), ("dim", "by Marco Cesarato"), ("sep",),
             ("status", "● Auto-approve on"), ("dim", "Accepts Claude's permission prompts"), ("sep",),
-            ("sub", "Pause"), ("subsel", "Skip chats"), ("item", "Open log"), ("sep",), ("item", "Quit", "⌘Q")]
+            ("sub", "Pause"), ("subsel", "Skip chats"), ("item", "Open log"), ("item", "GitHub"), ("sep",), ("item", "Quit", "⌘Q")]
     y, parts, sel_y = y0 + 10, [], 0
     for r in rows:
         kind = r[0]
