@@ -25,6 +25,9 @@ final class AppModel: ObservableObject {
     /// Typed in the sidebar's search field; it filters the activity and the chats.
     /// Typed in the sidebar: the detail shows what matches across pages, chats and approvals.
     @Published var query = ""
+    /// Whether any of the window is on screen: the woodpecker rests while it is not, since a
+    /// closed window's views live on and would keep decoding frames.
+    @Published var windowVisible = false
 
     init(monitor: Monitor) {
         self.monitor = monitor
@@ -117,7 +120,7 @@ final class MainWindow: NSWindow, NSToolbarDelegate {
 
         let side = NSSplitViewItem(sidebarWithViewController: sidebar)
         side.minimumThickness = 230
-        side.maximumThickness = 300
+        side.maximumThickness = 230   // always its narrowest width, as in the App Store
         side.canCollapse = false
         split.addSplitViewItem(side)
         let content = NSSplitViewItem(viewController: detail)
@@ -140,6 +143,11 @@ final class MainWindow: NSWindow, NSToolbarDelegate {
         isReleasedWhenClosed = false
         center()
         setFrameAutosaveName("Main")
+        NotificationCenter.default.addObserver(forName: NSWindow.didChangeOcclusionStateNotification, object: self,
+                                               queue: .main) { [weak self, weak model] _ in
+            guard let self else { return }
+            model?.windowVisible = self.occlusionState.contains(.visible)
+        }
     }
 
     /// A pane whose SwiftUI content follows the pane's frame and never sets it: a hosting
@@ -191,39 +199,39 @@ extension View {
 }
 
 /// A capsule button for the hero card's gradient: white and filled, or white glass.
+/// A capsule on the hero: brighter on hover, pressed in while held, faded when disabled.
 struct PillButtonStyle: ButtonStyle {
     var filled = false
 
-    func makeBody(configuration: Configuration) -> some View {
-        configuration.label
-            .font(.headline)
-            .padding(.horizontal, 20)
-            .padding(.vertical, 10)
-            .foregroundStyle(filled ? coral : .white)
-            .background(Capsule().fill(filled ? Color.white : Color.white.opacity(0.22)))
-            .overlay(Capsule().strokeBorder(Color.white.opacity(filled ? 0 : 0.5), lineWidth: 1))
-            .opacity(configuration.isPressed ? 0.75 : 1)
-            .contentShape(Capsule())
+    func makeBody(configuration: Configuration) -> some View { Pill(configuration: configuration, filled: filled) }
+
+    private struct Pill: View {
+        let configuration: Configuration
+        let filled: Bool
+        @State private var hovering = false
+        @Environment(\.isEnabled) private var enabled
+
+        var body: some View {
+            configuration.label
+                .font(.headline)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 10)
+                .foregroundStyle(filled ? coral : .white)
+                .background(Capsule().fill(filled ? Color.white.opacity(hovering ? 0.9 : 1)
+                                                  : Color.white.opacity(hovering ? 0.32 : 0.22)))
+                .overlay(Capsule().strokeBorder(Color.white.opacity(filled ? 0 : 0.5), lineWidth: 1))
+                // Lifts a white pill off a light backdrop.
+                .shadow(color: .black.opacity(filled ? 0.12 : 0), radius: 6, y: 2)
+                .scaleEffect(configuration.isPressed ? 0.96 : 1)
+                .opacity(enabled ? 1 : 0.5)
+                .contentShape(Capsule())
+                .onHover { hovering = $0 }
+                .animation(.easeOut(duration: 0.12), value: configuration.isPressed)
+                .animation(.easeOut(duration: 0.12), value: hovering)
+        }
     }
 }
 
-/// The rays of the icon's burst.
-/// The woodpecker of the README, pecking; it rests while the app is paused or lacks access.
-struct PeckingBird: NSViewRepresentable {
-    let animates: Bool
-
-    func makeNSView(context: Context) -> NSImageView {
-        let view = NSImageView()
-        view.image = Bundle.main.url(forResource: "woodpecker", withExtension: "gif").flatMap(NSImage.init(contentsOf:))
-        view.imageScaling = .scaleProportionallyUpOrDown
-        view.animates = animates
-        view.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
-        view.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
-        return view
-    }
-
-    func updateNSView(_ view: NSImageView, context: Context) { view.animates = animates }
-}
 /// A coloured rounded square with a symbol, as an app icon stands beside a row.
 struct Badge: View {
     let symbol: String
@@ -276,6 +284,23 @@ struct SectionTitle: View {
 
 // MARK: - Sidebar
 
+/// A sidebar row: a light plate when selected, fainter on hover, darker while pressed.
+private struct SidebarRowStyle: ButtonStyle {
+    let selected: Bool
+    @State private var hovering = false
+
+    func makeBody(configuration: Configuration) -> some View {
+        let plate = configuration.isPressed ? 0.1 : selected ? 0.06 : hovering ? 0.035 : 0
+        configuration.label
+            .padding(.horizontal, 12)
+            .padding(.vertical, 8)
+            .background(RoundedRectangle(cornerRadius: 10, style: .continuous).fill(Color.primary.opacity(plate)))
+            .contentShape(Rectangle())
+            .onHover { hovering = $0 }
+            .animation(.easeOut(duration: 0.12), value: plate)
+    }
+}
+
 private struct SidebarView: View {
     @ObservedObject var model: AppModel
 
@@ -285,7 +310,7 @@ private struct SidebarView: View {
                 Image(systemName: "magnifyingglass").foregroundStyle(.secondary).accessibilityHidden(true)
                 TextField(L10n.t(.search), text: $model.query)
                     .textFieldStyle(.plain)
-                    .font(.title3)
+                    .font(.system(size: 15))
                 if !model.query.isEmpty {
                     Button { model.query = "" } label: { Image(systemName: "xmark.circle.fill") }
                         .buttonStyle(.plain)
@@ -300,15 +325,28 @@ private struct SidebarView: View {
             .padding(.top, 8)
             .padding(.bottom, 10)
 
-            List(selection: Binding(get: { model.pane }, set: { if let pane = $0 { model.pane = pane; model.query = "" } })) {
+            // As in the App Store: outline symbols, and the selected row in the accent colour on
+            // a light plate rather than a filled highlight.
+            VStack(spacing: 4) {
                 ForEach(Pane.allCases.filter { model.matches($0.title) }) { pane in
-                    Label(pane.title, systemImage: pane.symbol)
-                        .font(.title3)
-                        .padding(.vertical, 5)
-                        .tag(pane)
+                    let selected = model.pane == pane && model.query.isEmpty
+                    Button { model.pane = pane; model.query = "" } label: {
+                        HStack(spacing: 12) {
+                            Image(systemName: pane.symbol)
+                                .font(.system(size: 17))
+                                .frame(width: 24)
+                                .accessibilityHidden(true)
+                            Text(pane.title).font(.system(size: 15))
+                            Spacer(minLength: 0)
+                        }
+                        .foregroundStyle(selected ? Color.accentColor : .primary)
+                    }
+                    .buttonStyle(SidebarRowStyle(selected: selected))
+                    .accessibilityAddTraits(selected ? .isSelected : [])
                 }
+                Spacer(minLength: 0)
             }
-            .listStyle(.sidebar)
+            .padding(.horizontal, 10)
 
             HStack(spacing: 12) {
                 Image(nsImage: NSApp.applicationIconImage)
@@ -386,25 +424,20 @@ private struct HeroCard: View {
     let width: CGFloat
 
     var body: some View {
-        ZStack {
-            // A band of light across the card, from the top left; an overlay, so its size is
-            // not the card's (a fixed-width band held the pane 900 points wide).
-            LinearGradient(colors: hero, startPoint: .topLeading, endPoint: .bottomTrailing)
-                .overlay(Ellipse()
-                    .fill(Color.white.opacity(0.22))
-                    .frame(width: 900, height: 260)
-                    .rotationEffect(.degrees(-24))
-                    .offset(x: 120, y: -150)
-                    .blur(radius: 40))
-            // The artwork shrinks, then goes, as the pane narrows; the text wraps and the card grows.
-            layout(artwork: width > 820 ? 330 : width > 620 ? 240 : 0)
-                .padding(.horizontal, width > 560 ? 36 : 24)
-                .padding(.vertical, 28)
-        }
-        .frame(maxWidth: .infinity, minHeight: 240)
-
-        .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
-        .shadow(color: coral.opacity(0.3), radius: 24, y: 12)
+        // The artwork shrinks, then goes, as the pane narrows; the text wraps and the card grows.
+        let artwork: CGFloat = width > 820 ? 330 : width > 620 ? 240 : 0
+        let inset: CGFloat = width > 560 ? 36 : 24
+        layout(artwork: artwork)
+            .padding(.horizontal, inset)
+            .padding(.vertical, 28)
+            .frame(maxWidth: .infinity, minHeight: 260)
+            // The scene is a background, so its size is never the card's.
+            .background(ZStack {
+                HeroScene(artwork: artwork, inset: inset)
+                HeroMotion(artwork: artwork, inset: inset, animates: model.active && model.windowVisible)
+            })
+            .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
+            .shadow(color: .black.opacity(0.12), radius: 24, y: 12)
     }
 
     @ViewBuilder private var buttons: some View {
@@ -424,7 +457,7 @@ private struct HeroCard: View {
                 Label(L10n.t(.pause), systemImage: "pause.fill")
             }
             .menuStyle(.button)
-            .buttonStyle(PillButtonStyle(filled: model.trusted))
+            .buttonStyle(PillButtonStyle(filled: true))
             .fixedSize()
         } else {
             Button { model.resume() } label: { Label(L10n.t(.resume), systemImage: "play.fill") }
@@ -438,15 +471,15 @@ private struct HeroCard: View {
                     Text("Claude Code".uppercased())
                         .font(.headline)
                         .kerning(1)
-                        .foregroundStyle(.white.opacity(0.85))
+                        .foregroundStyle(Color.black.opacity(0.55))
                     Text(model.statusTitle)
                         .font(.system(size: 40, weight: .medium))
-                        .foregroundStyle(.white)
+                        .foregroundStyle(Color.black.opacity(0.85))
                         .lineLimit(2)
                         .minimumScaleFactor(0.7)
                     Text(L10n.t(model.trusted ? .runningBody : .needsAccessBody))
                         .font(.title3)
-                        .foregroundStyle(.white.opacity(0.9))
+                        .foregroundStyle(Color.black.opacity(0.6))
                         .fixedSize(horizontal: false, vertical: true)
                     // Side by side while they fit, stacked when the pane is narrow.
                     ViewThatFits(in: .horizontal) {
@@ -458,19 +491,8 @@ private struct HeroCard: View {
                 .frame(maxWidth: 520, alignment: .leading)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 if size > 0 {
-                    ZStack {
-                        // The app's icon, faint, behind the bird.
-                        Image(nsImage: NSApp.applicationIconImage)
-                            .resizable()
-                            .interpolation(.high)
-                            .frame(width: size * 0.82, height: size * 0.82)
-                            .rotationEffect(.degrees(-8))
-                            .opacity(0.35)
-                        PeckingBird(animates: model.active)
-                            .frame(width: size, height: size * 0.745)
-                    }
-                    .frame(width: size, height: size * 0.9)
-                    .accessibilityHidden(true)
+                    // Room for the woodpecker, which the card's background draws with its twig.
+                    Color.clear.frame(width: size, height: size * 0.9)
                 }
         }
     }

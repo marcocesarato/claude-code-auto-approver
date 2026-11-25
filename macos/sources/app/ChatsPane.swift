@@ -63,26 +63,21 @@ struct ChatsPane: View {
         }
     }
 
+    // Compact: the section already says whether the chat is open or skipped.
     private func card(_ chat: AppModel.Chat) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            Text((chat.skipped ? L10n.t(.skippedChats) : L10n.t(.openNow)).uppercased())
-                .font(.caption.weight(.semibold))
-                .foregroundStyle(.secondary)
+        HStack(spacing: 12) {
+            Badge(symbol: chat.skipped ? "hand.raised.fill" : "bubble.left.fill",
+                  colors: chat.skipped ? Tone.muted : Tone.chats, size: 32)
             Text(chat.title)
-                .font(.system(size: 22, weight: .regular))
+                .font(.body.weight(.medium))
                 .lineLimit(2)
-                .frame(maxWidth: .infinity, minHeight: 56, alignment: .topLeading)
-            HStack {
-                Badge(symbol: chat.skipped ? "hand.raised.fill" : "bubble.left.fill",
-                      colors: chat.skipped ? Tone.muted : Tone.chats, size: 36)
-                Spacer()
-                Toggle(L10n.t(.skipChats), isOn: Binding(get: { chat.skipped }, set: { _ in model.toggleSkip(chat) }))
-                    .toggleStyle(.switch)
-                    .labelsHidden()
-                    .accessibilityLabel("\(L10n.t(.skipChats)): \(chat.title)")
-            }
+                .frame(maxWidth: .infinity, alignment: .leading)
+            Toggle(L10n.t(.skipChats), isOn: Binding(get: { chat.skipped }, set: { _ in model.toggleSkip(chat) }))
+                .toggleStyle(.switch)
+                .labelsHidden()
+                .accessibilityLabel("\(L10n.t(.skipChats)): \(chat.title)")
         }
-        .padding(20)
+        .padding(16)
         .frame(maxWidth: .infinity, alignment: .leading)
         .cardBackground()
     }

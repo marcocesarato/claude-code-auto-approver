@@ -30,7 +30,7 @@ SDK="$(xcrun --sdk macosx --show-sdk-version)"
 xcrun vtool -set-build-version macos 13.0 "$SDK" -replace \
     -output "$APP/Contents/MacOS/$EXECUTABLE" "$APP/Contents/MacOS/$EXECUTABLE" 2>/dev/null
 cp resources/Info.plist "$APP/Contents/Info.plist"
-cp resources/woodpecker.gif "$APP/Contents/Resources/"
+cp resources/woodpecker.gif resources/peck.json resources/branch.png resources/twig.png "$APP/Contents/Resources/"
 /usr/libexec/PlistBuddy -c "Set CFBundleShortVersionString $VERSION" -c "Set CFBundleVersion $VERSION" \
     "$APP/Contents/Info.plist"
 
