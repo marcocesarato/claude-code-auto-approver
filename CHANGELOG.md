@@ -7,8 +7,9 @@
   **Status** (state, pause, today's count), **Activity** (each approval with its chat and
   request), **Chats** (skip a chat with a switch) and **Settings** (open at login, the
   buttons to press, the log). Closing it keeps the app in the menu bar.
-- The Status page opens on a woodland scene: the woodpecker pecks a twig, and an **Allow once**
-  leaf hangs from it. It rests while auto-approve is paused and while the window is hidden.
+- The Status page shows the woodpecker flying at a big **Y** key and pressing it while
+  auto-approve runs, and resting in a wood, by an **Allow once** leaf, while it is paused. The
+  animation stops while the window is hidden.
 - The sidebar keeps its narrowest width and marks the open page as the App Store does.
 - The log records the chat and the request of each approval.
 - The menu bar icon starts next to the clock, so a notch no longer hides it.

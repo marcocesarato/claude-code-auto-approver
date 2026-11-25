@@ -425,17 +425,20 @@ private struct HeroCard: View {
 
     var body: some View {
         // The artwork shrinks, then goes, as the pane narrows; the text wraps and the card grows.
-        let artwork: CGFloat = width > 820 ? 330 : width > 620 ? 240 : 0
+        let artwork: CGFloat = width > 820 ? 380 : width > 620 ? 260 : 0
         let inset: CGFloat = width > 560 ? 36 : 24
         layout(artwork: artwork)
             .padding(.horizontal, inset)
             .padding(.vertical, 28)
             .frame(maxWidth: .infinity, minHeight: 260)
             // The scene is a background, so its size is never the card's.
-            .background(ZStack {
-                HeroScene(artwork: artwork, inset: inset)
-                HeroMotion(artwork: artwork, inset: inset, animates: model.active && model.windowVisible)
-            })
+            .background {
+                if model.active {
+                    KeyScene(artwork: artwork, inset: inset, animates: model.windowVisible)
+                } else {
+                    WoodlandScene(artwork: artwork, inset: inset)
+                }
+            }
             .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
             .shadow(color: .black.opacity(0.12), radius: 24, y: 12)
     }
@@ -491,8 +494,8 @@ private struct HeroCard: View {
                 .frame(maxWidth: 520, alignment: .leading)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 if size > 0 {
-                    // Room for the woodpecker, which the card's background draws with its twig.
-                    Color.clear.frame(width: size, height: size * 0.9)
+                    // Room for the woodpecker, which the card's background draws.
+                    Color.clear.frame(width: size, height: size * 0.8)
                 }
         }
     }
