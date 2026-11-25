@@ -35,6 +35,14 @@ public enum Chats {
         return titles.map { $0 + "\n" }.joined()
     }
 
+    /// The chats to offer: the skipped ones even when closed, so each can be undone, then the
+    /// open ones not skipped, sorted as Finder sorts names.
+    public static func listed(open: [String], skipped: [String]) -> [String] {
+        var titles = skipped
+        for chat in open where !isSkipped(chat, titles) { titles.append(chat) }
+        return titles.sorted { $0.localizedStandardCompare($1) == .orderedAscending }
+    }
+
     public static func isSkipped(_ title: String?, _ skipped: [String]) -> Bool {
         guard let title else { return false }
         return skipped.contains { same($0, title) }

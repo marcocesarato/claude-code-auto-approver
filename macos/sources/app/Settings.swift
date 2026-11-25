@@ -16,6 +16,33 @@ enum Settings {
 
     static func readLabels() -> String? { try? String(contentsOfFile: labelsPath, encoding: .utf8) }
 
+    /// Saves the labels to press; the monitor reads them on its next tick.
+    static func writeLabels(_ text: String) -> Bool {
+        let url = URL(fileURLWithPath: labelsPath)
+        do {
+            try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+            try text.write(to: url, atomically: true, encoding: .utf8)
+            log("🏷 Labels saved")
+            return true
+        } catch {
+            log("❌ Could not save the labels: \(error.localizedDescription)")
+            return false
+        }
+    }
+
+    /// The end of the log: enough for the recent approvals, cheap to read every few seconds.
+    /// A line cut by the start of the read is dropped.
+    static func readLogTail(bytes: UInt64 = 64 * 1024) -> String {
+        guard let handle = FileHandle(forReadingAtPath: logPath) else { return "" }
+        defer { try? handle.close() }
+        let end = (try? handle.seekToEnd()) ?? 0
+        let start = end > bytes ? end - bytes : 0
+        try? handle.seek(toOffset: start)
+        let text = String(decoding: (try? handle.readToEnd()) ?? Data(), as: UTF8.self)
+        guard start > 0, let newline = text.firstIndex(of: "\n") else { return text }
+        return String(text[text.index(after: newline)...])
+    }
+
     static func readSkippedChats() -> String? { try? String(contentsOfFile: skippedChatsPath, encoding: .utf8) }
 
     static func toggleSkipped(_ title: String) {

@@ -70,13 +70,14 @@ final class Monitor {
         // Read every tick, so an edited labels file applies without a restart.
         let wanted = Labels.wanted(fromFile: Settings.readLabels())
         let skipped = Chats.skipped(fromFile: Settings.readSkippedChats())
-        let label = ClaudeWindow.pressAllow(wanted, skipping: skipped)
+        let pressed = ClaudeWindow.pressAllow(wanted, skipping: skipped)
             ?? NotificationBanners.pressAction(wanted, skipping: skipped)
         chatsLock.lock(); chats = ClaudeWindow.openChats; chatsLock.unlock()
-        if let label {
+        if let pressed {
             accepted += 1
             cooldown = 1
-            log("🤖 Approved #\(accepted): pressed \"\(label)\"\(Screen.locked ? " 🔒" : "")")
+            log(Activity.logLine(number: accepted, label: pressed.label, locked: Screen.locked,
+                                 chat: pressed.chat, request: pressed.request))
         }
     }
 

@@ -34,3 +34,10 @@ import Testing
         #expect(!Chats.bannerIsSkipped(banner, []))
     }
 }
+
+@Suite struct ChatsListingTests {
+    @Test func listsSkippedChatsEvenWhenClosedThenTheOpenOnesSorted() {
+        let listed = Chats.listed(open: ["Write notes", "fix tests", "Chat 10", "Chat 9"], skipped: ["Fix tests", "Old chat"])
+        #expect(listed == ["Chat 9", "Chat 10", "Fix tests", "Old chat", "Write notes"])
+    }
+}

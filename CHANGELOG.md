@@ -3,6 +3,12 @@
 ## Unreleased
 
 - The menu has a **GitHub** item that opens the project's page.
+- A window, opened at launch, from the Dock and from **Open window…** in the menu:
+  **Status** (state, pause, today's count), **Activity** (each approval with its chat and
+  request), **Chats** (skip a chat with a switch) and **Settings** (open at login, the
+  buttons to press, the log). Closing it keeps the app in the menu bar.
+- The log records the chat and the request of each approval.
+- The menu bar icon starts next to the clock, so a notch no longer hides it.
 
 ## 1.0.1
 

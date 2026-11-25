@@ -34,7 +34,7 @@ enum NotificationBanners {
     }
 
     /// Answers a Claude permission banner. Returns the label used when one was allowed.
-    static func pressAction(_ wanted: Set<[String]>, skipping skipped: [String]) -> String? {
+    static func pressAction(_ wanted: Set<[String]>, skipping skipped: [String]) -> Pressed? {
         guard let center = AXNode.application(bundleId) else { return nil }
         let all = subtree(center, limit: 3000)
         for a in all.flatMap(\.actions) where a.hasPrefix("Name:") {
@@ -58,11 +58,11 @@ enum NotificationBanners {
             // The action itself, offered as a custom action or as a button.
             for item in items {
                 for a in item.actions where Labels.matches(label(ofAction: a), wanted) {
-                    if item.node.perform(a) == .success { return "\(label(ofAction: a)) (notification)" }
+                    if item.node.perform(a) == .success { return pressed("\(label(ofAction: a)) (notification)", text) }
                 }
                 if item.node.isButton, Labels.matches(item.node.text, wanted),
                    item.node.perform(kAXPressAction) == .success {
-                    return "\(item.node.text) (notification)"
+                    return pressed("\(item.node.text) (notification)", text)
                 }
             }
 
@@ -85,5 +85,10 @@ enum NotificationBanners {
             return nil
         }
         return nil
+    }
+
+    private static func pressed(_ label: String, _ banner: String) -> Pressed {
+        let read = Activity.bannerRequest(banner)
+        return Pressed(label: label, chat: read.chat, request: read.request)
     }
 }

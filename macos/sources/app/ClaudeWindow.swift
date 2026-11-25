@@ -11,8 +11,8 @@ enum ClaudeWindow {
     private(set) static var openChats: [String] = []
 
     /// Presses the first button in the Claude window whose label is wanted, outside a
-    /// skipped chat. Returns the label pressed, or nil when no such button is on screen.
-    static func pressAllow(_ wanted: Set<[String]>, skipping skipped: [String]) -> String? {
+    /// skipped chat. Returns what was pressed, or nil when no such button is on screen.
+    static func pressAllow(_ wanted: Set<[String]>, skipping skipped: [String]) -> Pressed? {
         guard let app = AXNode.application(bundleId) else { return nil }
         // Electron builds its accessibility tree only once an assistive client asks for it.
         AXUIElementSetAttributeValue(app, "AXManualAccessibility" as CFString, kCFBooleanTrue)
@@ -71,12 +71,35 @@ enum ClaudeWindow {
             logWaiting(waiting)
             return nil
         }
+        // Read before pressing: the dialog closes with the press.
+        let asked = request(around: button)
         let r = button.perform(kAXPressAction)
         guard r == .success else {
             log("❌ Pressing \"\(button.label)\" failed (AXError \(r.rawValue))")
             return nil
         }
-        return button.label
+        return Pressed(label: button.label, chat: chats.last, request: asked)
+    }
+
+    /// The dialog's own text: the first sentences in the nearest ancestor that holds any
+    /// besides buttons. Best effort, within a small budget.
+    private static func request(around button: AXNode) -> String? {
+        var node = button.parent
+        for _ in 0..<6 {
+            guard let current = node else { return nil }
+            var texts: [String] = []
+            var budget = 300
+            func collect(_ element: AXUIElement, _ depth: Int) {
+                budget -= 1
+                guard budget > 0, depth < 8, texts.count < 3, let child = AXNode(element) else { return }
+                if child.role == kAXStaticTextRole, child.text.count >= 8 { texts.append(child.text) }
+                if !child.isButton { child.children.forEach { collect($0, depth + 1) } }
+            }
+            current.children.forEach { collect($0, 0) }
+            if !texts.isEmpty { return texts.joined(separator: " ") }
+            node = current.parent
+        }
+        return nil
     }
 
     /// A session waits and no dialog is on screen: it is another session. Logged, not

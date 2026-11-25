@@ -156,6 +156,10 @@ outline** while it is paused or lacks permission.
 | **Open log** | Opens what the app saw and pressed. |
 | **GitHub** | Opens the project's page, for releases and issues. |
 
+**Open window…**, or the Dock icon, opens the app's window: its status, each approval with
+its chat and request, the chats to skip and its settings. Closing the window keeps the app
+running in the menu bar.
+
 A skipped chat is known by its title. If Claude renames the chat, the skip ends, and two
 chats with the same title are both skipped.
 

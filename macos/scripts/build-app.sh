@@ -24,7 +24,13 @@ BIN="$(swift build -c release "${SCRATCH[@]}" ${ARCHS[@]+"${ARCHS[@]}"} --show-b
 rm -rf "$APP"
 mkdir -p "$APP/Contents/MacOS" "$APP/Contents/Resources"
 cp "$BIN" "$APP/Contents/MacOS/$EXECUTABLE"
+# SwiftPM records the deployment target as the SDK the binary was built with, and macOS 26
+# draws an app in Liquid Glass only when that SDK is 26 or later: record the real one.
+SDK="$(xcrun --sdk macosx --show-sdk-version)"
+xcrun vtool -set-build-version macos 13.0 "$SDK" -replace \
+    -output "$APP/Contents/MacOS/$EXECUTABLE" "$APP/Contents/MacOS/$EXECUTABLE" 2>/dev/null
 cp resources/Info.plist "$APP/Contents/Info.plist"
+cp resources/woodpecker.gif "$APP/Contents/Resources/"
 /usr/libexec/PlistBuddy -c "Set CFBundleShortVersionString $VERSION" -c "Set CFBundleVersion $VERSION" \
     "$APP/Contents/Info.plist"
 

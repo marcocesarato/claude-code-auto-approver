@@ -34,8 +34,6 @@
     </array>
     <key>LSMinimumSystemVersion</key>
     <string>13.0</string>
-    <key>LSUIElement</key>
-    <true/>
     <key>NSHumanReadableCopyright</key>
     <string>© Marco Cesarato</string>
 </dict>

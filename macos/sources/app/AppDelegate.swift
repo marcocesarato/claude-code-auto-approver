@@ -11,11 +11,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private let resumeItem = NSMenuItem()
     private let skipMenu = NSMenu()
     private var refreshTimer: Timer?
+    private lazy var model = AppModel(monitor: monitor)
+    private lazy var window = MainWindow(model: model)
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         log("🚀 \(Product.name) \(Settings.version) started [\(L10n.current)]")
         Notifier.shared.setup()
         Screen.observe()
+        // A new status item takes the leftmost place, which a notch hides on a full menu bar;
+        // until the person drags it elsewhere, it starts next to the clock instead.
+        UserDefaults.standard.register(defaults: ["NSStatusItem Preferred Position Item-0": 120])
+        buildMainMenu()
         buildMenu()
 
         // Pressing buttons needs Accessibility: ask once at launch, then keep the icon honest.
@@ -26,11 +32,53 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         refreshTimer = Timer.scheduledTimer(withTimeInterval: 3, repeats: true) { [weak self] _ in self?.refreshMenu() }
         monitor.onStateChange = { [weak self] in DispatchQueue.main.async { self?.refreshMenu() } }
         monitor.start()
+        showWindow()
 
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {
             Notifier.shared.send(title: L10n.t(.running),
                                  body: L10n.t(AXIsProcessTrusted() ? .runningBody : .needsAccessBody))
         }
+    }
+
+    // The window is opened at launch, from the Dock and from the menu bar; closing it leaves
+    // the app running in the menu bar.
+    func applicationShouldHandleReopen(_ sender: NSApplication, hasVisibleWindows flag: Bool) -> Bool {
+        if !flag { showWindow() }
+        return true
+    }
+
+    @objc private func showWindow() {
+        model.refresh()
+        NSApp.activate(ignoringOtherApps: true)
+        window.makeKeyAndOrderFront(nil)
+        // Nothing focused: the search field would otherwise take every key typed at the window.
+        window.makeFirstResponder(nil)
+    }
+
+    /// The app's own menus, for its window: Quit, the editing keys its text field needs, Close.
+    private func buildMainMenu() {
+        let main = NSMenu()
+        func add(_ title: String, _ items: [NSMenuItem]) {
+            let menu = NSMenu(title: title)
+            items.forEach(menu.addItem)
+            let host = NSMenuItem(title: title, action: nil, keyEquivalent: "")
+            host.submenu = menu
+            main.addItem(host)
+        }
+        func key(_ title: String, _ action: Selector, _ key: String) -> NSMenuItem {
+            NSMenuItem(title: title, action: action, keyEquivalent: key)
+        }
+        add(Product.name, [key(L10n.t(.openWindow), #selector(showWindow), "0"), .separator(),
+                           key(L10n.t(.hide), #selector(NSApplication.hide(_:)), "h"),
+                           key(L10n.t(.quit), #selector(NSApplication.terminate(_:)), "q")])
+        main.items.first?.submenu?.items.first?.target = self
+        add(L10n.t(.edit), [key(L10n.t(.cut), #selector(NSText.cut(_:)), "x"),
+                            key(L10n.t(.copy), #selector(NSText.copy(_:)), "c"),
+                            key(L10n.t(.paste), #selector(NSText.paste(_:)), "v"),
+                            key(L10n.t(.selectAll), #selector(NSText.selectAll(_:)), "a")])
+        add(L10n.t(.window), [key(L10n.t(.minimize), #selector(NSWindow.performMiniaturize(_:)), "m"),
+                              key(L10n.t(.close), #selector(NSWindow.performClose(_:)), "w")])
+        NSApp.mainMenu = main
     }
 
     private func buildMenu() {
@@ -63,6 +111,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
         skipMenu.delegate = self
         skipItem.submenu = skipMenu
         menu.addItem(skipItem)
+        menu.addItem(item(L10n.t(.openWindow), #selector(showWindow)))
         menu.addItem(item(L10n.t(.openLog), #selector(openLog)))
         menu.addItem(item("GitHub", #selector(openRepository)))
         menu.addItem(.separator())
@@ -75,8 +124,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
     private func pauseMenu() -> NSMenu {
         let menu = NSMenu()
         for duration in Pause.durations {
-            let title = duration.map { L10n.duration($0) } ?? L10n.t(.untilResume)
-            let item = NSMenuItem(title: title, action: #selector(pause(_:)), keyEquivalent: "")
+            let item = NSMenuItem(title: L10n.pauseLength(duration), action: #selector(pause(_:)), keyEquivalent: "")
             item.target = self
             item.representedObject = duration
             if duration == nil { menu.addItem(.separator()) }
@@ -87,26 +135,24 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func menuNeedsUpdate(_ menu: NSMenu) {
         guard menu === skipMenu else { return refreshMenu() }
-        // The chats open now, and the skipped ones even when closed, so each can be undone.
-        let skipped = Chats.skipped(fromFile: Settings.readSkippedChats())
-        var titles = skipped
-        for chat in monitor.openChats where !Chats.isSkipped(chat, titles) { titles.append(chat) }
+        model.refresh()
         menu.removeAllItems()
-        if titles.isEmpty { menu.addItem(withTitle: L10n.t(.noChats), action: nil, keyEquivalent: "").isEnabled = false }
-        for title in titles.sorted(by: { $0.localizedStandardCompare($1) == .orderedAscending }) {
-            let item = NSMenuItem(title: title, action: #selector(toggleSkip(_:)), keyEquivalent: "")
+        if model.chats.isEmpty { menu.addItem(withTitle: L10n.t(.noChats), action: nil, keyEquivalent: "").isEnabled = false }
+        for chat in model.chats {
+            let item = NSMenuItem(title: chat.title, action: #selector(toggleSkip(_:)), keyEquivalent: "")
             item.target = self
-            item.state = Chats.isSkipped(title, skipped) ? .on : .off
+            item.representedObject = chat
+            item.state = chat.skipped ? .on : .off
             menu.addItem(item)
         }
     }
 
     private func refreshMenu() {
-        let on = monitor.active
-        let trusted = AXIsProcessTrusted()
+        model.refresh()
+        let on = model.active
+        let trusted = model.trusted
         statusItem.button?.image = MenuBarIcon.image(active: on && trusted)
-        let status = on ? L10n.t(.statusOn) : monitor.resumeAt.map { L10n.pausedUntil($0) } ?? L10n.t(.statusOff)
-        statusLine.attributedTitle = styled(status, size: 13, weight: .medium,
+        statusLine.attributedTitle = styled(model.statusText, size: 13, weight: .medium,
                                             color: on ? .systemGreen : .secondaryLabelColor)
         detailLine.attributedTitle = styled(L10n.t(trusted ? .detailOn : .detailNeedsAccess), size: 11,
                                             color: trusted ? .secondaryLabelColor : .systemOrange)
@@ -131,11 +177,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
                            attributes: [.foregroundColor: color, .font: NSFont.systemFont(ofSize: size, weight: weight)])
     }
 
-    @objc private func pause(_ sender: NSMenuItem) { monitor.pause(for: sender.representedObject as? TimeInterval) }
-    @objc private func resume() { monitor.resume() }
+    @objc private func pause(_ sender: NSMenuItem) { model.pause(for: sender.representedObject as? TimeInterval) }
+    @objc private func resume() { model.resume() }
     @objc private func toggleSkip(_ sender: NSMenuItem) {
-        Settings.toggleSkipped(sender.title)
-        log(sender.state == .on ? "▶️ Approving \"\(sender.title)\" again" : "⏭ Skipping \"\(sender.title)\"")
+        if let chat = sender.representedObject as? AppModel.Chat { model.toggleSkip(chat) }
     }
     @objc private func openLog() { NSWorkspace.shared.open(URL(fileURLWithPath: Settings.logPath)) }
     @objc private func openRepository() { NSWorkspace.shared.open(Product.repository) }
