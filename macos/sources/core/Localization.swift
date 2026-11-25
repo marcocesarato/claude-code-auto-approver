@@ -9,7 +9,7 @@ public enum Product {
 /// The app's own words, in the first of the user's languages it has; English otherwise.
 public enum L10n {
     public enum Key: CaseIterable {
-        case running, runningBody, needsAccessBody, by, statusOn, statusOff, detailOn, detailNeedsAccess
+        case running, runningBody, pausedBody, needsAccessBody, by, statusOn, statusOff, detailOn, detailNeedsAccess
         case pause, resume, openLog, quit, untilResume, pausedUntil, skipChats, noChats
         case openWindow, paneStatus, paneChats, paneActivity, paneSettings, openAccessibility, skipHint
         case approvals, noActivity, labelsTitle, labelsHint, save, launchAtLogin, hide
@@ -24,6 +24,7 @@ public enum L10n {
 
     static let table: [String: [Key: String]] = [
         "en": [.running: "\(name) is on", .runningBody: "Claude's permission prompts are accepted automatically",
+               .pausedBody: "Claude's permission prompts wait for you until you resume",
                .needsAccessBody: "Open System Settings → Privacy & Security → Accessibility and turn on \(name)",
                .by: "by \(author)", .statusOn: "● Auto-approve on", .statusOff: "○ Paused",
                .detailOn: "Accepts Claude's permission prompts", .detailNeedsAccess: "⚠️ Needs the Accessibility permission",
@@ -42,6 +43,7 @@ public enum L10n {
                .openNow: "Open now", .skippedClosed: "Skipped, not open", .general: "General", .files: "Files",
                .showInFinder: "Show in Finder", .about: "About", .builtInLabels: "Built-in labels", .license: "License"],
         "it": [.running: "\(name) è attivo", .runningBody: "I prompt di permesso di Claude vengono accettati automaticamente",
+               .pausedBody: "I prompt di permesso di Claude aspettano te finché non riprendi",
                .needsAccessBody: "Apri Impostazioni di Sistema → Privacy e sicurezza → Accessibilità e attiva \(name)",
                .by: "di \(author)", .statusOn: "● Approvazione automatica attiva", .statusOff: "○ In pausa",
                .detailOn: "Accetta i prompt di permesso di Claude", .detailNeedsAccess: "⚠️ Serve il permesso Accessibilità",
@@ -60,6 +62,7 @@ public enum L10n {
                .openNow: "Aperte ora", .skippedClosed: "Saltate, non aperte", .general: "Generali", .files: "File",
                .showInFinder: "Mostra nel Finder", .about: "Info", .builtInLabels: "Etichette predefinite", .license: "Licenza"],
         "de": [.running: "\(name) ist aktiv", .runningBody: "Berechtigungsanfragen von Claude werden automatisch akzeptiert",
+               .pausedBody: "Berechtigungsanfragen von Claude warten auf dich, bis du fortsetzt",
                .needsAccessBody: "Öffne Systemeinstellungen → Datenschutz & Sicherheit → Bedienungshilfen und aktiviere \(name)",
                .by: "von \(author)", .statusOn: "● Automatische Freigabe aktiv", .statusOff: "○ Pausiert",
                .detailOn: "Akzeptiert Claudes Berechtigungsanfragen", .detailNeedsAccess: "⚠️ Bedienungshilfen-Berechtigung erforderlich",
@@ -78,6 +81,7 @@ public enum L10n {
                .openNow: "Jetzt geöffnet", .skippedClosed: "Übersprungen, nicht geöffnet", .general: "Allgemein", .files: "Dateien",
                .showInFinder: "Im Finder zeigen", .about: "Über", .builtInLabels: "Eingebaute Beschriftungen", .license: "Lizenz"],
         "es": [.running: "\(name) está activo", .runningBody: "Las solicitudes de permiso de Claude se aceptan automáticamente",
+               .pausedBody: "Las solicitudes de permiso de Claude te esperan hasta que reanudes",
                .needsAccessBody: "Abre Ajustes del Sistema → Privacidad y seguridad → Accesibilidad y activa \(name)",
                .by: "de \(author)", .statusOn: "● Aprobación automática activa", .statusOff: "○ En pausa",
                .detailOn: "Acepta las solicitudes de permiso de Claude", .detailNeedsAccess: "⚠️ Necesita el permiso de Accesibilidad",
@@ -96,6 +100,7 @@ public enum L10n {
                .openNow: "Abiertos ahora", .skippedClosed: "Omitidos, no abiertos", .general: "General", .files: "Archivos",
                .showInFinder: "Mostrar en el Finder", .about: "Acerca de", .builtInLabels: "Etiquetas predeterminadas", .license: "Licencia"],
         "fr": [.running: "\(name) est actif", .runningBody: "Les demandes d’autorisation de Claude sont acceptées automatiquement",
+               .pausedBody: "Les demandes d’autorisation de Claude vous attendent jusqu’à la reprise",
                .needsAccessBody: "Ouvrez Réglages Système → Confidentialité et sécurité → Accessibilité et activez \(name)",
                .by: "par \(author)", .statusOn: "● Approbation automatique active", .statusOff: "○ En pause",
                .detailOn: "Accepte les demandes d’autorisation de Claude", .detailNeedsAccess: "⚠️ Autorisation Accessibilité requise",
@@ -114,6 +119,7 @@ public enum L10n {
                .openNow: "Ouverts maintenant", .skippedClosed: "Ignorés, non ouverts", .general: "Général", .files: "Fichiers",
                .showInFinder: "Afficher dans le Finder", .about: "À propos", .builtInLabels: "Libellés intégrés", .license: "Licence"],
         "pt": [.running: "\(name) está ativo", .runningBody: "Os pedidos de permissão do Claude são aceitos automaticamente",
+               .pausedBody: "Os pedidos de permissão do Claude esperam por você até retomar",
                .needsAccessBody: "Abra Ajustes do Sistema → Privacidade e Segurança → Acessibilidade e ative o \(name)",
                .by: "por \(author)", .statusOn: "● Aprovação automática ativa", .statusOff: "○ Em pausa",
                .detailOn: "Aceita os pedidos de permissão do Claude", .detailNeedsAccess: "⚠️ Precisa da permissão de Acessibilidade",
@@ -132,6 +138,7 @@ public enum L10n {
                .openNow: "Abertos agora", .skippedClosed: "Ignorados, não abertos", .general: "Geral", .files: "Arquivos",
                .showInFinder: "Mostrar no Finder", .about: "Sobre", .builtInLabels: "Rótulos padrão", .license: "Licença"],
         "ja": [.running: "\(name) が有効です", .runningBody: "Claude の許可リクエストを自動的に承認します",
+               .pausedBody: "再開するまで、Claude の許可リクエストはあなたの応答を待ちます",
                .needsAccessBody: "システム設定 → プライバシーとセキュリティ → アクセシビリティ で \(name) をオンにしてください",
                .by: "作成: \(author)", .statusOn: "● 自動承認オン", .statusOff: "○ 一時停止中",
                .detailOn: "Claude の許可リクエストを承認します", .detailNeedsAccess: "⚠️ アクセシビリティの許可が必要です",

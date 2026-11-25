@@ -488,7 +488,7 @@ private struct HeroCard: View {
                         .foregroundStyle(Color.black.opacity(0.85))
                         .lineLimit(2)
                         .minimumScaleFactor(0.7)
-                    Text(L10n.t(model.trusted ? .runningBody : .needsAccessBody))
+                    Text(L10n.t(!model.trusted ? .needsAccessBody : model.active ? .runningBody : .pausedBody))
                         .font(.title3)
                         .foregroundStyle(Color.black.opacity(0.6))
                         .fixedSize(horizontal: false, vertical: true)

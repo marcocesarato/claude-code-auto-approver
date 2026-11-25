@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- While auto-approve is paused, the Status page says the prompts wait for you, instead of
+  saying they are accepted.
+
 ## 1.1.0
 
 - The menu has a **GitHub** item that opens the project's page.

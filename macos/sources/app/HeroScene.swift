@@ -91,7 +91,15 @@ struct WoodlandScene: View {
                                   width: width, height: height)
                 context.drawLayer { layer in
                     layer.addFilter(.shadow(color: .black.opacity(0.18), radius: 10, y: 8))
-                    layer.draw(Image(nsImage: branch), in: rect)
+                    layer.drawLayer { art in
+                        art.draw(Image(nsImage: branch), in: rect)
+                        // The branch's far end fades out before the text, which stays legible.
+                        art.blendMode = .destinationOut
+                        art.fill(Path(CGRect(x: 0, y: 0, width: frame.minX, height: size.height)),
+                                 with: .linearGradient(Gradient(stops: [.init(color: .black, location: 0), .init(color: .black, location: 0.75),
+                                                                        .init(color: .clear, location: 1)]),
+                                                       startPoint: .zero, endPoint: CGPoint(x: frame.minX, y: 0)))
+                    }
                 }
             }
             TimelineView(.animation(minimumInterval: 1 / PeckFrames.rate, paused: !animates)) { timeline in
