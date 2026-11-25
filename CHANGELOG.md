@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.1.1
 
 - While auto-approve is paused, the Status page says the prompts wait for you, instead of
   saying they are accepted.
