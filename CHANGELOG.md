@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 1.1.0
 
 - The menu has a **GitHub** item that opens the project's page.
 - A window, opened at launch, from the Dock and from **Open window…** in the menu:
