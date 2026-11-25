@@ -74,7 +74,7 @@ struct ChatsPane: View {
                 .frame(maxWidth: .infinity, minHeight: 56, alignment: .topLeading)
             HStack {
                 Badge(symbol: chat.skipped ? "hand.raised.fill" : "bubble.left.fill",
-                      colors: chat.skipped ? [.gray, .secondary] : [.blue, .indigo], size: 36)
+                      colors: chat.skipped ? Tone.muted : Tone.chats, size: 36)
                 Spacer()
                 Toggle(L10n.t(.skipChats), isOn: Binding(get: { chat.skipped }, set: { _ in model.toggleSkip(chat) }))
                     .toggleStyle(.switch)

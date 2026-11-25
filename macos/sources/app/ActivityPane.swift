@@ -14,7 +14,7 @@ struct ApprovalList: View {
                 ForEach(Array(approvals.enumerated()), id: \.offset) { index, approval in
                     HStack(alignment: .top, spacing: 14) {
                         Badge(symbol: approval.fromNotification ? "bell.badge.fill" : "macwindow",
-                              colors: approval.fromNotification ? [.pink, .red] : [coral, .red], size: 44)
+                              colors: approval.fromNotification ? Tone.notification : Tone.window, size: 44)
                             .accessibilityHidden(true)
                         VStack(alignment: .leading, spacing: 3) {
                             // The chat heads the row when known; the request says what was allowed.
@@ -106,7 +106,7 @@ struct ActivityPane: View {
     var body: some View {
         let shown = model.approvals.filter { approval in
             (source == .all || (source == .notifications) == approval.fromNotification)
-                && [approval.label, approval.chat ?? "", approval.request ?? "", L10n.day(approval.day)].contains(where: model.matches)
+                && model.matches(approval)
         }
         PaneScroll(title: Pane.activity.title) {
             header

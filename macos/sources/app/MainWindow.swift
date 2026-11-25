@@ -23,9 +23,8 @@ final class AppModel: ObservableObject {
     @Published private(set) var approvals: [Approval] = []
     @Published var pane: Pane = .status
     /// Typed in the sidebar's search field; it filters the activity and the chats.
-    @Published var query = "" {
-        didSet { if !query.isEmpty, pane == .status || pane == .settings { pane = .activity } }
-    }
+    /// Typed in the sidebar: the detail shows what matches across pages, chats and approvals.
+    @Published var query = ""
 
     init(monitor: Monitor) {
         self.monitor = monitor
@@ -50,7 +49,14 @@ final class AppModel: ObservableObject {
         return approvals.filter { $0.day == today }.count
     }
 
-    func matches(_ text: String) -> Bool { query.isEmpty || text.localizedCaseInsensitiveContains(query) }
+    func matches(_ text: String) -> Bool {
+        let query = query.trimmingCharacters(in: .whitespaces)
+        return query.isEmpty || text.range(of: query, options: [.caseInsensitive, .diacriticInsensitive]) != nil
+    }
+
+    func matches(_ approval: Approval) -> Bool {
+        [approval.label, approval.chat ?? "", approval.request ?? "", L10n.day(approval.day)].contains(where: matches)
+    }
 
     /// Call on the main thread.
     func refresh() {
@@ -164,6 +170,18 @@ final class MainWindow: NSWindow, NSToolbarDelegate {
 
 /// The brand's coral, as on the icon and the README banner.
 let coral = Color(red: 0.98, green: 0.384, blue: 0.157)
+
+/// Badge gradients, one per meaning, each two neighbouring hues so none clashes.
+enum Tone {
+    static let success = [Color(red: 0.30, green: 0.82, blue: 0.47), Color(red: 0.13, green: 0.64, blue: 0.40)]
+    static let chats = [Color(red: 0.33, green: 0.60, blue: 1.00), Color(red: 0.31, green: 0.40, blue: 0.96)]
+    static let access = [Color(red: 0.66, green: 0.52, blue: 1.00), Color(red: 0.47, green: 0.34, blue: 0.92)]
+    static let warning = [Color(red: 1.00, green: 0.55, blue: 0.25), Color(red: 0.93, green: 0.30, blue: 0.24)]
+    static let awake = [Color(red: 1.00, green: 0.76, blue: 0.28), Color(red: 0.97, green: 0.53, blue: 0.16)]
+    static let notification = [Color(red: 1.00, green: 0.45, blue: 0.40), Color(red: 0.90, green: 0.24, blue: 0.36)]
+    static let window = [Color(red: 0.98, green: 0.52, blue: 0.24), coral]
+    static let muted = [Color(red: 0.62, green: 0.64, blue: 0.68), Color(red: 0.45, green: 0.47, blue: 0.52)]
+}
 let hero = [Color(red: 0.86, green: 0.2, blue: 0.33), coral, Color(red: 1.0, green: 0.55, blue: 0.22)]   // red to orange
 
 extension View {
@@ -282,8 +300,8 @@ private struct SidebarView: View {
             .padding(.top, 8)
             .padding(.bottom, 10)
 
-            List(selection: Binding(get: { model.pane }, set: { if let pane = $0 { model.pane = pane } })) {
-                ForEach(Pane.allCases) { pane in
+            List(selection: Binding(get: { model.pane }, set: { if let pane = $0 { model.pane = pane; model.query = "" } })) {
+                ForEach(Pane.allCases.filter { model.matches($0.title) }) { pane in
                     Label(pane.title, systemImage: pane.symbol)
                         .font(.title3)
                         .padding(.vertical, 5)
@@ -318,11 +336,13 @@ private struct DetailView: View {
     @ObservedObject var model: AppModel
 
     var body: some View {
+        if !model.query.trimmingCharacters(in: .whitespaces).isEmpty { SearchPane(model: model) } else {
         switch model.pane {
         case .status: StatusPane(model: model)
         case .activity: ActivityPane(model: model)
         case .chats: ChatsPane(model: model)
         case .settings: SettingsPane()
+        }
         }
     }
 }
@@ -340,19 +360,19 @@ private struct StatusPane: View {
                     StatCard(eyebrow: L10n.t(.approvedToday), value: "\(model.approvedToday)",
                              caption: model.approvals.first.map { "\(L10n.t(.lastApproval)): \(L10n.day($0.day)), \($0.clock)" }
                                 ?? L10n.t(.noneYet),
-                             badge: Badge(symbol: "checkmark.seal.fill", colors: [.green, .teal]))
+                             badge: Badge(symbol: "checkmark.seal.fill", colors: Tone.success))
                     StatCard(eyebrow: L10n.t(.openChats), value: "\(model.chats.filter(\.isOpen).count)",
                              caption: "\(L10n.t(.skippedChats)): \(model.chats.filter(\.skipped).count)",
-                             badge: Badge(symbol: "bubble.left.and.bubble.right.fill", colors: [.blue, .indigo])) {
+                             badge: Badge(symbol: "bubble.left.and.bubble.right.fill", colors: Tone.chats)) {
                         Button(L10n.t(.manage)) { model.pane = .chats }.buttonStyle(.link)
                     }
                     StatCard(eyebrow: L10n.t(.accessibility), value: L10n.t(model.trusted ? .granted : .notGranted),
                              caption: L10n.t(model.trusted ? .detailOn : .detailNeedsAccess)
                                 .trimmingCharacters(in: CharacterSet(charactersIn: "⚠️ ")),
-                             badge: Badge(symbol: "hand.raised.fill", colors: model.trusted ? [.mint, .teal] : [.orange, .red]))
+                             badge: Badge(symbol: "hand.raised.fill", colors: model.trusted ? Tone.access : Tone.warning))
                     StatCard(eyebrow: L10n.t(.keepAwake), value: model.active ? "☕️" : "💤",
                              caption: L10n.t(.keepAwakeBody),
-                             badge: Badge(symbol: "cup.and.saucer.fill", colors: [.brown, .orange]))
+                             badge: Badge(symbol: "cup.and.saucer.fill", colors: Tone.awake))
                 }
                 SectionTitle(title: L10n.t(.recent), action: model.approvals.isEmpty ? nil : (L10n.t(.showAll), { model.pane = .activity }))
                 ApprovalList(approvals: Array(model.approvals.prefix(5)), showsDay: true)
@@ -524,13 +544,13 @@ private struct SettingsPane: View {
             VStack(alignment: .leading, spacing: 12) {
                 SectionTitle(title: L10n.t(.general))
                 VStack(spacing: 0) {
-                    row(Badge(symbol: "power", colors: [.green, .teal], size: 36), L10n.t(.launchAtLogin)) {
+                    row(Badge(symbol: "power", colors: Tone.success, size: 36), L10n.t(.launchAtLogin)) {
                         Toggle(L10n.t(.launchAtLogin), isOn: Binding(get: { atLogin }, set: setOpenAtLogin))
                             .toggleStyle(.switch)
                             .labelsHidden()
                     }
                     Divider().padding(.leading, 50)
-                    row(Badge(symbol: "cup.and.saucer.fill", colors: [.brown, .orange], size: 36), L10n.t(.keepAwake),
+                    row(Badge(symbol: "cup.and.saucer.fill", colors: Tone.awake, size: 36), L10n.t(.keepAwake),
                         detail: L10n.t(.keepAwakeBody)) { EmptyView() }
                 }
                 .padding(.horizontal, 18)
@@ -576,7 +596,7 @@ private struct SettingsPane: View {
             VStack(alignment: .leading, spacing: 12) {
                 SectionTitle(title: L10n.t(.files))
                 VStack(spacing: 0) {
-                    row(Badge(symbol: "doc.text.fill", colors: [.gray, .secondary], size: 36), "ClaudeCodeAutoApprover.log",
+                    row(Badge(symbol: "doc.text.fill", colors: Tone.muted, size: 36), "ClaudeCodeAutoApprover.log",
                         detail: (Settings.logPath as NSString).abbreviatingWithTildeInPath) {
                         HStack {
                             Button(L10n.t(.openLog)) { NSWorkspace.shared.open(URL(fileURLWithPath: Settings.logPath)) }

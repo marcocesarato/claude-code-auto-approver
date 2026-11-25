@@ -14,7 +14,7 @@ public enum L10n {
         case openWindow, paneStatus, paneChats, paneActivity, paneSettings, openAccessibility, skipHint
         case approvals, noActivity, labelsTitle, labelsHint, save, launchAtLogin, hide
         case edit, cut, copy, paste, selectAll, window, minimize, close
-        case search, approvedToday, lastApproval, noneYet, recent, showAll, manage, openChats, skippedChats
+        case search, noResults, pages, approvedToday, lastApproval, noneYet, recent, showAll, manage, openChats, skippedChats
         case accessibility, granted, notGranted, keepAwake, keepAwakeBody, all, notifications, openNow, skippedClosed
         case general, files, showInFinder, about, builtInLabels, license
     }
@@ -35,7 +35,7 @@ public enum L10n {
                .launchAtLogin: "Open at login", .hide: "Hide", .edit: "Edit", .cut: "Cut",
                .copy: "Copy", .paste: "Paste", .selectAll: "Select All", .window: "Window",
                .minimize: "Minimize", .close: "Close",
-               .search: "Search", .approvedToday: "Approved today", .lastApproval: "Last approval", .noneYet: "None yet",
+               .search: "Search", .noResults: "No results", .pages: "Pages", .approvedToday: "Approved today", .lastApproval: "Last approval", .noneYet: "None yet",
                .recent: "Recent", .showAll: "Show all", .manage: "Manage", .openChats: "Open chats",
                .skippedChats: "Skipped chats", .accessibility: "Accessibility", .granted: "Granted", .notGranted: "Not granted",
                .keepAwake: "Keeps the Mac awake", .keepAwakeBody: "While it approves, the Mac does not go to sleep on its own. The screen can still lock.", .all: "All", .notifications: "Notifications",
@@ -53,7 +53,7 @@ public enum L10n {
                .launchAtLogin: "Apri al login", .hide: "Nascondi", .edit: "Modifica", .cut: "Taglia",
                .copy: "Copia", .paste: "Incolla", .selectAll: "Seleziona tutto", .window: "Finestra",
                .minimize: "Contrai", .close: "Chiudi",
-               .search: "Cerca", .approvedToday: "Approvati oggi", .lastApproval: "Ultima approvazione", .noneYet: "Ancora nessuna",
+               .search: "Cerca", .noResults: "Nessun risultato", .pages: "Pagine", .approvedToday: "Approvati oggi", .lastApproval: "Ultima approvazione", .noneYet: "Ancora nessuna",
                .recent: "Recenti", .showAll: "Mostra tutte", .manage: "Gestisci", .openChats: "Chat aperte",
                .skippedChats: "Chat saltate", .accessibility: "Accessibilità", .granted: "Concesso", .notGranted: "Non concesso",
                .keepAwake: "Tiene sveglio il Mac", .keepAwakeBody: "Mentre approva, il Mac non va in stop da solo. Lo schermo può comunque bloccarsi.", .all: "Tutte", .notifications: "Notifiche",
@@ -71,7 +71,7 @@ public enum L10n {
                .launchAtLogin: "Beim Anmelden öffnen", .hide: "Ausblenden", .edit: "Bearbeiten", .cut: "Ausschneiden",
                .copy: "Kopieren", .paste: "Einsetzen", .selectAll: "Alles auswählen", .window: "Fenster",
                .minimize: "Im Dock ablegen", .close: "Schließen",
-               .search: "Suchen", .approvedToday: "Heute freigegeben", .lastApproval: "Letzte Freigabe", .noneYet: "Noch keine",
+               .search: "Suchen", .noResults: "Keine Treffer", .pages: "Seiten", .approvedToday: "Heute freigegeben", .lastApproval: "Letzte Freigabe", .noneYet: "Noch keine",
                .recent: "Zuletzt", .showAll: "Alle anzeigen", .manage: "Verwalten", .openChats: "Offene Chats",
                .skippedChats: "Übersprungene Chats", .accessibility: "Bedienungshilfen", .granted: "Erteilt", .notGranted: "Nicht erteilt",
                .keepAwake: "Hält den Mac wach", .keepAwakeBody: "Während der Freigabe geht der Mac nicht von selbst in den Ruhezustand. Der Bildschirm kann sich trotzdem sperren.", .all: "Alle", .notifications: "Mitteilungen",
@@ -89,7 +89,7 @@ public enum L10n {
                .launchAtLogin: "Abrir al iniciar sesión", .hide: "Ocultar", .edit: "Edición", .cut: "Cortar",
                .copy: "Copiar", .paste: "Pegar", .selectAll: "Seleccionar todo", .window: "Ventana",
                .minimize: "Minimizar", .close: "Cerrar",
-               .search: "Buscar", .approvedToday: "Aprobados hoy", .lastApproval: "Última aprobación", .noneYet: "Ninguna todavía",
+               .search: "Buscar", .noResults: "Sin resultados", .pages: "Páginas", .approvedToday: "Aprobados hoy", .lastApproval: "Última aprobación", .noneYet: "Ninguna todavía",
                .recent: "Recientes", .showAll: "Ver todo", .manage: "Gestionar", .openChats: "Chats abiertos",
                .skippedChats: "Chats omitidos", .accessibility: "Accesibilidad", .granted: "Concedido", .notGranted: "No concedido",
                .keepAwake: "Mantiene el Mac despierto", .keepAwakeBody: "Mientras aprueba, el Mac no entra en reposo por sí solo. La pantalla puede bloquearse igualmente.", .all: "Todas", .notifications: "Notificaciones",
@@ -107,7 +107,7 @@ public enum L10n {
                .launchAtLogin: "Ouvrir à l’ouverture de session", .hide: "Masquer", .edit: "Édition", .cut: "Couper",
                .copy: "Copier", .paste: "Coller", .selectAll: "Tout sélectionner", .window: "Fenêtre",
                .minimize: "Placer dans le Dock", .close: "Fermer",
-               .search: "Rechercher", .approvedToday: "Approuvés aujourd’hui", .lastApproval: "Dernière approbation", .noneYet: "Aucune pour l’instant",
+               .search: "Rechercher", .noResults: "Aucun résultat", .pages: "Pages", .approvedToday: "Approuvés aujourd’hui", .lastApproval: "Dernière approbation", .noneYet: "Aucune pour l’instant",
                .recent: "Récents", .showAll: "Tout afficher", .manage: "Gérer", .openChats: "Chats ouverts",
                .skippedChats: "Chats ignorés", .accessibility: "Accessibilité", .granted: "Accordée", .notGranted: "Non accordée",
                .keepAwake: "Garde le Mac éveillé", .keepAwakeBody: "Pendant l’approbation, le Mac ne se met pas en veille de lui-même. L’écran peut quand même se verrouiller.", .all: "Toutes", .notifications: "Notifications",
@@ -125,7 +125,7 @@ public enum L10n {
                .launchAtLogin: "Abrir ao iniciar sessão", .hide: "Ocultar", .edit: "Editar", .cut: "Cortar",
                .copy: "Copiar", .paste: "Colar", .selectAll: "Selecionar tudo", .window: "Janela",
                .minimize: "Minimizar", .close: "Fechar",
-               .search: "Buscar", .approvedToday: "Aprovados hoje", .lastApproval: "Última aprovação", .noneYet: "Nenhuma ainda",
+               .search: "Buscar", .noResults: "Nenhum resultado", .pages: "Páginas", .approvedToday: "Aprovados hoje", .lastApproval: "Última aprovação", .noneYet: "Nenhuma ainda",
                .recent: "Recentes", .showAll: "Mostrar tudo", .manage: "Gerenciar", .openChats: "Chats abertos",
                .skippedChats: "Chats ignorados", .accessibility: "Acessibilidade", .granted: "Concedida", .notGranted: "Não concedida",
                .keepAwake: "Mantém o Mac acordado", .keepAwakeBody: "Enquanto aprova, o Mac não entra em repouso sozinho. A tela ainda pode bloquear.", .all: "Todas", .notifications: "Notificações",
@@ -143,7 +143,7 @@ public enum L10n {
                .launchAtLogin: "ログイン時に開く", .hide: "隠す", .edit: "編集", .cut: "カット",
                .copy: "コピー", .paste: "ペースト", .selectAll: "すべてを選択", .window: "ウインドウ",
                .minimize: "しまう", .close: "閉じる",
-               .search: "検索", .approvedToday: "今日の承認", .lastApproval: "最後の承認", .noneYet: "まだありません",
+               .search: "検索", .noResults: "結果なし", .pages: "ページ", .approvedToday: "今日の承認", .lastApproval: "最後の承認", .noneYet: "まだありません",
                .recent: "最近", .showAll: "すべて表示", .manage: "管理", .openChats: "開いているチャット",
                .skippedChats: "スキップ中のチャット", .accessibility: "アクセシビリティ", .granted: "許可済み", .notGranted: "未許可",
                .keepAwake: "Macをスリープさせません", .keepAwakeBody: "承認中はMacが自動でスリープしません。画面のロックは引き続き行われます。", .all: "すべて", .notifications: "通知",
