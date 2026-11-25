@@ -1,6 +1,6 @@
 import AppKit
 
-redirectOutputToLog()
+if !Demo.on { redirectOutputToLog() }
 
 let app = NSApplication.shared
 app.setActivationPolicy(.regular)

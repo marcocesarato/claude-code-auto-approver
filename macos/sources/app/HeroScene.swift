@@ -96,7 +96,7 @@ struct KeyScene: View {
         ZStack {
             Canvas { context, size in backdrop(&context, size, light: Self.light, glow: coral) }
             TimelineView(.animation(minimumInterval: 1 / PeckFrames.rate, paused: !animates)) { timeline in
-                let index = animates ? Int(timeline.date.timeIntervalSinceReferenceDate * PeckFrames.rate) : 0
+                let index = animates ? Int(timeline.date.timeIntervalSinceReferenceDate * PeckFrames.rate) : Demo.on ? Demo.frame : 0
                 Canvas { context, size in
                     guard artwork > 0 else { return }
                     let frame = birdFrame(in: size, artwork: artwork, inset: inset)

@@ -65,6 +65,13 @@ final class AppModel: ObservableObject {
     func refresh() {
         active = monitor.active
         resumeAt = monitor.resumeAt
+        // Made-up chats and approvals, and a granted Accessibility, for the README's screenshots.
+        if Demo.on {
+            trusted = true
+            if chats != Demo.chats { chats = Demo.chats }
+            if approvals != Demo.approvals { approvals = Demo.approvals }
+            return
+        }
         trusted = AXIsProcessTrusted()
         let open = monitor.openChats
         let skipped = Chats.skipped(fromFile: Settings.readSkippedChats())
@@ -78,6 +85,7 @@ final class AppModel: ObservableObject {
     func pause(for duration: TimeInterval?) { monitor.pause(for: duration); refresh() }
     func resume() { monitor.resume(); refresh() }
     func toggleSkip(_ chat: Chat) {
+        guard !Demo.on else { return }
         Settings.toggleSkipped(chat.title)
         log(chat.skipped ? "▶️ Approving \"\(chat.title)\" again" : "⏭ Skipping \"\(chat.title)\"")
         refresh()
@@ -434,7 +442,7 @@ private struct HeroCard: View {
             // The scene is a background, so its size is never the card's.
             .background {
                 if model.active {
-                    KeyScene(artwork: artwork, inset: inset, animates: model.windowVisible)
+                    KeyScene(artwork: artwork, inset: inset, animates: model.windowVisible && !Demo.on)
                 } else {
                     WoodlandScene(artwork: artwork, inset: inset)
                 }

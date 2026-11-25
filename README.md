@@ -160,6 +160,41 @@ outline** while it is paused or lacks permission.
 its chat and request, the chats to skip and its settings. Closing the window keeps the app
 running in the menu bar.
 
+<table>
+  <tr>
+    <td width="50%" align="center">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="docs/window-status-dark.png">
+        <img src="docs/window-status-light.png" alt="The Status page while auto-approve runs: the woodpecker presses a Y key">
+      </picture>
+      <br><sub><b>Status</b>, while it approves</sub>
+    </td>
+    <td width="50%" align="center">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="docs/window-paused-dark.png">
+        <img src="docs/window-paused-light.png" alt="The Status page while paused: the woodpecker rests on a branch in a wood">
+      </picture>
+      <br><sub><b>Status</b>, while paused</sub>
+    </td>
+  </tr>
+  <tr>
+    <td width="50%" align="center">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="docs/window-activity-dark.png">
+        <img src="docs/window-activity-light.png" alt="The Activity page: each approval with its chat, its request and where it was pressed">
+      </picture>
+      <br><sub><b>Activity</b>: each approval, with its chat and request</sub>
+    </td>
+    <td width="50%" align="center">
+      <picture>
+        <source media="(prefers-color-scheme: dark)" srcset="docs/window-chats-dark.png">
+        <img src="docs/window-chats-light.png" alt="The Chats page: the open chats, each with a switch to skip it">
+      </picture>
+      <br><sub><b>Chats</b>: switch a chat on to leave its prompts to you</sub>
+    </td>
+  </tr>
+</table>
+
 A skipped chat is known by its title. If Claude renames the chat, the skip ends, and two
 chats with the same title are both skipped.
 
@@ -227,7 +262,8 @@ macos/                    the macOS app, a Swift package
   resources/Info.plist    bundle metadata; the version lives here
   scripts/                build-app.sh, install.sh, uninstall.sh
 windows/                  the PowerShell version
-docs/                     README art: make-art.py draws each picture as SVG and 2x PNG
+docs/                     README art: make-art.py draws each picture as SVG and 2x PNG;
+                          make-screenshots.sh takes the window's, from its demo mode
 .github/workflows/        CI on every push, a release on every v* tag
 ```
 

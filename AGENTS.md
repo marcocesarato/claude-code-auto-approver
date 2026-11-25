@@ -21,7 +21,7 @@ banner in Notification Center (`com.apple.notificationcenterui`). A PowerShell p
 | `macos/resources/Info.plist` | Bundle metadata and the version | The release workflow overrides the version from the tag. |
 | `macos/scripts/` | `build-app.sh`, `install.sh`, `uninstall.sh` | Each script `cd`s to `macos/` itself. `build-app.sh` compiles the icon with Xcode's `actool`. |
 | `windows/` | `auto-approver.ps1` and its installers | Keep its behaviour and log lines in step with the macOS app. |
-| `docs/` | README art, light and dark; `make-art.py` writes each picture as SVG and as the 2x PNG the README shows, and `icon.png`, the app icon the banner shows, rendered from `macos/resources/AppIcon.icon` | Edit the generator, never the pictures; edit the icon in Icon Composer. Rendering needs Google Chrome and Xcode. |
+| `docs/` | README art, light and dark; `make-art.py` writes each picture as SVG and as the 2x PNG the README shows, and `icon.png`, the app icon the banner shows, rendered from `macos/resources/AppIcon.icon`; `make-screenshots.sh` takes the window's screenshots from the app's demo mode (`--demo <page> [--dark]`), which shows made-up chats and approvals and changes nothing | Edit the generator, never the pictures; edit the icon in Icon Composer. Rendering needs Google Chrome and Xcode. |
 
 Folder names are lowercase. Swift files are named after the type they hold.
 

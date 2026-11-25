@@ -16,6 +16,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
 
     func applicationDidFinishLaunching(_ notification: Notification) {
         log("🚀 \(Product.name) \(Settings.version) started [\(L10n.current)]")
+        guard !Demo.on else { return startDemo() }
         Notifier.shared.setup()
         Screen.observe()
         // A new status item takes the leftmost place, which a notch hides on a full menu bar;
@@ -38,6 +39,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate, NSMenuDelegate {
             Notifier.shared.send(title: L10n.t(.running),
                                  body: L10n.t(AXIsProcessTrusted() ? .runningBody : .needsAccessBody))
         }
+    }
+
+    /// The menu and the window over made-up data, at a size that fits the Status page, which the
+    /// demo does not save over the one the person chose.
+    private func startDemo() {
+        NSApp.appearance = NSAppearance(named: Demo.dark ? .darkAqua : .aqua)
+        buildMainMenu()
+        buildMenu()
+        if Demo.page == "paused" { monitor.pause(for: nil) }
+        model.pane = Demo.pane
+        window.setFrameAutosaveName("")
+        window.setContentSize(NSSize(width: 1240, height: 820))
+        showWindow()
     }
 
     // The window is opened at launch, from the Dock and from the menu bar; closing it leaves
