@@ -172,7 +172,7 @@ running in the menu bar.
     <td width="50%" align="center">
       <picture>
         <source media="(prefers-color-scheme: dark)" srcset="docs/window-paused-dark.png">
-        <img src="docs/window-paused-light.png" alt="The Status page while paused: the woodpecker rests on a branch in a wood">
+        <img src="docs/window-paused-light.png" alt="The Status page while paused: the woodpecker pecks a twig in a wood">
       </picture>
       <br><sub><b>Status</b>, while paused</sub>
     </td>

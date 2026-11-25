@@ -444,7 +444,7 @@ private struct HeroCard: View {
                 if model.active {
                     KeyScene(artwork: artwork, inset: inset, animates: model.windowVisible && !Demo.on)
                 } else {
-                    WoodlandScene(artwork: artwork, inset: inset)
+                    WoodlandScene(artwork: artwork, inset: inset, animates: model.windowVisible && !Demo.on)
                 }
             }
             .clipShape(RoundedRectangle(cornerRadius: 28, style: .continuous))
