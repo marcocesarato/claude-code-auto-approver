@@ -1,18 +1,1 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640" font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif" role="img" aria-label="Claude Code - Auto Approver. Stop babysitting permission prompts.">
-<defs>
-  <linearGradient id="word" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FF8A5B"/><stop offset="1" stop-color="#D93A22"/></linearGradient>
-  <radialGradient id="halo" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FF7A4D" stop-opacity="0.2"/><stop offset="1" stop-color="#FF7A4D" stop-opacity="0"/></radialGradient>
-  <filter id="lift" x="-40%" y="-40%" width="180%" height="180%"><feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#7a2410" flood-opacity="0.28"/></filter>
-</defs>
-<rect width="1280" height="640" rx="28" fill="#FBFBFD"/>
-<ellipse cx="640.0" cy="190.0" rx="330" ry="210" fill="url(#halo)"/>
-<image href="icon.png" x="542.0" y="92" width="196" height="196" filter="url(#lift)"/>
-<text x="640.0" y="378" text-anchor="middle" font-size="26" font-weight="600" fill="#6E6E73" letter-spacing=".2">Claude Code</text>
-<text x="640.0" y="452" text-anchor="middle" font-size="80" font-weight="700" letter-spacing="-2.4" fill="#1D1D1F">Auto Approver<tspan fill="url(#word)">.</tspan></text>
-<text x="640.0" y="506" text-anchor="middle" font-size="30" font-weight="500" letter-spacing="-.3" fill="#6E6E73">Stop babysitting permission prompts.</text>
-<g font-size="19" font-weight="500">
-  <rect x="462.0" y="544" width="168" height="44" rx="22" fill="#0071E3"/>
-  <text x="546.0" y="572" text-anchor="middle" fill="#fff">Download</text>
-  <text x="666.0" y="572" fill="#0066CC">For macOS and Windows ›</text>
-</g>
-</svg>
+<svg xmlns="http://www.w3.org/2000/svg" width="1280" height="640" aria-label="Claude Code - Auto Approver. Stop babysitting permission prompts." font-family="-apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Helvetica Neue', Helvetica, Arial, sans-serif" role="img" viewBox="0 0 1280 640"><defs><linearGradient id="word" x1="0" x2="1" y1="0" y2="0"><stop offset="0" stop-color="#FF8A5B"/><stop offset="1" stop-color="#D93A22"/></linearGradient><radialGradient id="halo" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FF7A4D" stop-opacity=".2"/><stop offset="1" stop-color="#FF7A4D" stop-opacity="0"/></radialGradient><filter id="lift" width="180%" height="180%" x="-40%" y="-40%"><feDropShadow dx="0" dy="16" flood-color="#7a2410" flood-opacity=".28" stdDeviation="18"/></filter></defs><rect width="1280" height="640" fill="#FBFBFD" rx="28"/><ellipse cx="640" cy="190" fill="url(#halo)" rx="330" ry="210"/><image width="196" height="196" x="542" y="92" filter="url(#lift)" href="icon.png"/><text x="640" y="378" fill="#6E6E73" font-size="26" font-weight="600" letter-spacing=".2" text-anchor="middle">Claude Code</text><text x="640" y="452" fill="#1D1D1F" font-size="80" font-weight="700" letter-spacing="-2.4" text-anchor="middle">Auto Approver<tspan fill="url(#word)">.</tspan></text><text x="640" y="506" fill="#6E6E73" font-size="30" font-weight="500" letter-spacing="-.3" text-anchor="middle">Stop babysitting permission prompts.</text><g font-size="19" font-weight="500"><rect width="168" height="44" x="462" y="544" fill="#0071E3" rx="22"/><text x="546" y="572" fill="#fff" text-anchor="middle">Download</text><text x="666" y="572" fill="#06C">For macOS and Windows ›</text></g></svg>
